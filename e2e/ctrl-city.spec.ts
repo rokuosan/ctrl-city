@@ -80,3 +80,38 @@ test("loads Cesium assets and completes the city paste interaction", async ({
     ),
   ).toEqual([]);
 });
+
+test("completes the paste with the iOS-safe tile profile", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    baseURL: "http://127.0.0.1:4173",
+    deviceScaleFactor: 3,
+    hasTouch: true,
+    isMobile: true,
+    userAgent:
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 26_5_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+    viewport: { width: 430, height: 932 },
+  });
+  const page = await context.newPage();
+  const pageErrors: string[] = [];
+
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+
+  await page.goto("/");
+  await expect(page.locator("#load-status-text")).toHaveText(
+    "2都市のデータ接続完了",
+    { timeout: 30_000 },
+  );
+  await page.locator("#paste-button").click();
+  await expect(page.locator("#mode-after")).toHaveAttribute(
+    "aria-pressed",
+    "true",
+    { timeout: 5_000 },
+  );
+  await expect(page.locator("#copy-sequence")).toBeHidden({ timeout: 6_000 });
+  await page.waitForTimeout(3_000);
+
+  expect(pageErrors).toEqual([]);
+  await context.close();
+});

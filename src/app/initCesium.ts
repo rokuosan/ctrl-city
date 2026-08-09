@@ -15,6 +15,8 @@ export function initCesium(container: HTMLElement): Viewer {
     infoBox: false,
     navigationHelpButton: false,
     // Avoid Safari's ANGLE/Metal shader-linking regression for translucent 3D Tiles.
+    // ref: https://bugs.webkit.org/show_bug.cgi?id=240919
+    // ref: https://cesium.com/learn/cesiumjs/ref-doc/Viewer.html
     orderIndependentTranslucency: false,
     sceneModePicker: false,
     selectionIndicator: false,
