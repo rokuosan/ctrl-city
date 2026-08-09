@@ -13,6 +13,7 @@
     "worker:dev": "pnpm build && wrangler dev",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "test:watch": "vitest",
     "types:worker": "wrangler types --include-runtime=false",
     "types:worker:check": "wrangler types --include-runtime=false --check"
@@ -21,6 +22,7 @@
     "cesium": "^1.144.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.62.1",
     "@types/node": "^26.2.0",
     "typescript": "^7.0.2",
     "vite": "^8.2.1",

@@ -10,10 +10,26 @@ export default defineConfig({
   plugins: [
     viteStaticCopy({
       targets: [
-        { src: `${cesiumBuild}/Assets`, dest: "cesiumStatic" },
-        { src: `${cesiumBuild}/ThirdParty`, dest: "cesiumStatic" },
-        { src: `${cesiumBuild}/Widgets`, dest: "cesiumStatic" },
-        { src: `${cesiumBuild}/Workers`, dest: "cesiumStatic" },
+        {
+          src: `${cesiumBuild}/Assets`,
+          dest: "cesiumStatic",
+          rename: { stripBase: 4 },
+        },
+        {
+          src: `${cesiumBuild}/ThirdParty`,
+          dest: "cesiumStatic",
+          rename: { stripBase: 4 },
+        },
+        {
+          src: `${cesiumBuild}/Widgets`,
+          dest: "cesiumStatic",
+          rename: { stripBase: 4 },
+        },
+        {
+          src: `${cesiumBuild}/Workers`,
+          dest: "cesiumStatic",
+          rename: { stripBase: 4 },
+        },
       ],
     }),
   ],
