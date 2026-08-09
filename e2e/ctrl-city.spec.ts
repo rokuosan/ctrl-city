@@ -49,6 +49,28 @@ test("loads Cesium assets and completes the city paste interaction", async ({
   );
   await expect(page.locator("#copy-sequence")).toBeHidden({ timeout: 8_000 });
 
+  await page.locator("#mode-before").click();
+  await page.keyboard.press("Control+c");
+  await expect(page.locator("#copy-sequence")).toBeVisible();
+  await expect(page.locator("#copy-sequence")).toHaveAttribute(
+    "data-step",
+    "waiting",
+  );
+  await expect(page.locator(".copy-sequence__prompt")).toBeVisible();
+  await page.waitForTimeout(1_000);
+  await expect(page.locator("#mode-before")).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+
+  await page.keyboard.press("Control+v");
+  await expect(page.locator("#mode-after")).toHaveAttribute(
+    "aria-pressed",
+    "true",
+    { timeout: 5_000 },
+  );
+  await expect(page.locator("#copy-sequence")).toBeHidden({ timeout: 8_000 });
+
   await page.waitForTimeout(5_000);
 
   expect(pageErrors).toEqual([]);

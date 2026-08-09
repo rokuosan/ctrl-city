@@ -126,6 +126,7 @@ app.innerHTML = `
       <div class="copy-sequence__card copy-sequence__paste">
         <small>02 / INSERT TARGET</small><strong>CTRL + V</strong><span>TOKYO_STATION.ECEF</span>
       </div>
+      <p class="copy-sequence__prompt">COPY STORED — CTRL + V で東京へ貼り付け</p>
       <p class="copy-sequence__complete">PASTE COMPLETE</p>
     </div>
 

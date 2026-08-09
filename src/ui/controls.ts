@@ -42,6 +42,8 @@ export function wireControls(
   const aboutClose = requireElement<HTMLButtonElement>(root, "#about-close");
 
   let sequenceRunning = false;
+  let awaitingKeyboardPaste = false;
+  let controlsReady = false;
 
   const updateMode = (nextMode: ComparisonMode) => {
     root.dataset.mode = nextMode;
@@ -69,7 +71,33 @@ export function wireControls(
 
   pasteButton.addEventListener("click", () => {
     if (!sequenceRunning) {
-      void runPasteSequence();
+      void runAutomaticPasteSequence();
+    }
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (isEditableTarget(event.target)) {
+      return;
+    }
+
+    if (event.key === "Escape" && awaitingKeyboardPaste) {
+      event.preventDefault();
+      resetSequence(false);
+      return;
+    }
+
+    if ((!event.ctrlKey && !event.metaKey) || event.altKey) {
+      return;
+    }
+
+    const key = event.key.toLowerCase();
+    if (key === "c" && controlsReady && !sequenceRunning) {
+      event.preventDefault();
+      startKeyboardCopy();
+    } else if (key === "v" && awaitingKeyboardPaste) {
+      event.preventDefault();
+      awaitingKeyboardPaste = false;
+      void runPasteStages(false);
     }
   });
 
@@ -82,11 +110,21 @@ export function wireControls(
     }
   });
 
-  async function runPasteSequence(): Promise<void> {
+  function prepareSequence(input: "button" | "keyboard", step: string): void {
     sequenceRunning = true;
     pasteButton.disabled = true;
     sequence.hidden = false;
-    sequence.dataset.step = "copy";
+    sequence.dataset.input = input;
+    sequence.dataset.step = step;
+  }
+
+  function startKeyboardCopy(): void {
+    awaitingKeyboardPaste = true;
+    prepareSequence("keyboard", "waiting");
+  }
+
+  async function runAutomaticPasteSequence(): Promise<void> {
+    prepareSequence("button", "copy");
 
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -94,6 +132,14 @@ export function wireControls(
     await delay(
       reduceMotion ? REDUCED_MOTION_STEP_MS : PASTE_SEQUENCE_TIMINGS.copy,
     );
+
+    await runPasteStages(true);
+  }
+
+  async function runPasteStages(focusButton: boolean): Promise<void> {
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     sequence.dataset.step = "transfer";
     await delay(
@@ -111,11 +157,19 @@ export function wireControls(
       reduceMotion ? REDUCED_MOTION_STEP_MS : PASTE_SEQUENCE_TIMINGS.complete,
     );
 
+    resetSequence(focusButton);
+  }
+
+  function resetSequence(focusButton: boolean): void {
     sequence.hidden = true;
     sequence.dataset.step = "copy";
-    pasteButton.disabled = false;
+    delete sequence.dataset.input;
+    awaitingKeyboardPaste = false;
     sequenceRunning = false;
-    pasteButton.focus();
+    pasteButton.disabled = !controlsReady;
+    if (focusButton) {
+      pasteButton.focus();
+    }
   }
 
   return {
@@ -128,6 +182,7 @@ export function wireControls(
       );
     },
     setReady() {
+      controlsReady = true;
       status.dataset.state = "ready";
       statusText.textContent = "2都市のデータ接続完了";
       statusProgress.style.setProperty("--load-progress", "100%");
@@ -138,12 +193,25 @@ export function wireControls(
       opacityInput.disabled = false;
     },
     setError(message: string) {
+      controlsReady = false;
       status.dataset.state = "error";
       statusText.textContent = message;
       retryButton.hidden = false;
       pasteButton.disabled = true;
     },
   };
+}
+
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) {
+    return false;
+  }
+
+  return Boolean(
+    target.closest(
+      "input, textarea, select, [contenteditable]:not([contenteditable='false'])",
+    ),
+  );
 }
 
 function requireElement<T extends Element>(
