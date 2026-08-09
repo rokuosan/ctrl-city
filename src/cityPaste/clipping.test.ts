@@ -4,7 +4,12 @@ import {
   DEFAULT_PASTE_SIZE_METERS,
   createStationClippingPlanes,
 } from "./clipping";
-import { KYOTO_STATION, stationToCartesian } from "./stations";
+import { createCityPasteTransform } from "./createCityPasteTransform";
+import {
+  KYOTO_STATION,
+  TOKYO_STATION,
+  stationToCartesian,
+} from "./stations";
 
 describe("createStationClippingPlanes", () => {
   it("creates four unioned planes at half the selected square size", () => {
@@ -38,5 +43,30 @@ describe("createStationClippingPlanes", () => {
     );
 
     expect(Cartesian3.distance(result, source)).toBeLessThan(0.001);
+  });
+
+  it("moves the clipping box with the pasted city transform", () => {
+    const source = stationToCartesian(KYOTO_STATION);
+    const target = stationToCartesian(TOKYO_STATION);
+    const tilesetCenter = Cartesian3.fromDegrees(135.5, 35.1);
+    const collection = createStationClippingPlanes(tilesetCenter, source);
+    const clippingOrigin = Transforms.eastNorthUpToFixedFrame(tilesetCenter);
+    const sourceWorldMatrix = Matrix4.multiplyTransformation(
+      clippingOrigin,
+      collection.modelMatrix,
+      new Matrix4(),
+    );
+    const pastedWorldMatrix = Matrix4.multiplyTransformation(
+      createCityPasteTransform(source, target),
+      sourceWorldMatrix,
+      new Matrix4(),
+    );
+    const result = Matrix4.multiplyByPoint(
+      pastedWorldMatrix,
+      Cartesian3.ZERO,
+      new Cartesian3(),
+    );
+
+    expect(Cartesian3.distance(result, target)).toBeLessThan(0.001);
   });
 });
