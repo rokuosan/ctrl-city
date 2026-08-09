@@ -12,6 +12,15 @@ export type Controls = Readonly<{
   setStatus: (message: string, progress: number) => void;
 }>;
 
+const PASTE_SEQUENCE_TIMINGS = {
+  copy: 1_300,
+  transfer: 1_100,
+  paste: 1_500,
+  complete: 1_200,
+} as const;
+
+const REDUCED_MOTION_STEP_MS = 40;
+
 export function wireControls(
   root: HTMLElement,
   callbacks: ControlsCallbacks,
@@ -82,17 +91,25 @@ export function wireControls(
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    await delay(reduceMotion ? 40 : 620);
+    await delay(
+      reduceMotion ? REDUCED_MOTION_STEP_MS : PASTE_SEQUENCE_TIMINGS.copy,
+    );
 
     sequence.dataset.step = "transfer";
-    await delay(reduceMotion ? 40 : 420);
+    await delay(
+      reduceMotion ? REDUCED_MOTION_STEP_MS : PASTE_SEQUENCE_TIMINGS.transfer,
+    );
 
     updateMode("after");
     sequence.dataset.step = "paste";
-    await delay(reduceMotion ? 40 : 720);
+    await delay(
+      reduceMotion ? REDUCED_MOTION_STEP_MS : PASTE_SEQUENCE_TIMINGS.paste,
+    );
 
     sequence.dataset.step = "complete";
-    await delay(reduceMotion ? 40 : 420);
+    await delay(
+      reduceMotion ? REDUCED_MOTION_STEP_MS : PASTE_SEQUENCE_TIMINGS.complete,
+    );
 
     sequence.hidden = true;
     sequence.dataset.step = "copy";

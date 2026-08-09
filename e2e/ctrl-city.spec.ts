@@ -39,12 +39,15 @@ test("loads Cesium assets and completes the city paste interaction", async ({
   await expect(page.locator("#opacity-value")).toHaveText("65%");
 
   await page.locator("#paste-button").click();
+  await expect(page.locator("#copy-sequence")).toBeVisible();
+  await page.waitForTimeout(3_000);
+  await expect(page.locator("#copy-sequence")).toBeVisible();
   await expect(page.locator("#mode-after")).toHaveAttribute(
     "aria-pressed",
     "true",
     { timeout: 5_000 },
   );
-  await expect(page.locator("#copy-sequence")).toBeHidden({ timeout: 5_000 });
+  await expect(page.locator("#copy-sequence")).toBeHidden({ timeout: 8_000 });
 
   await page.waitForTimeout(5_000);
 
