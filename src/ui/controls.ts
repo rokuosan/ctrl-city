@@ -13,10 +13,10 @@ export type Controls = Readonly<{
 }>;
 
 const PASTE_SEQUENCE_TIMINGS = {
-  copy: 1_300,
-  transfer: 1_100,
-  paste: 1_500,
-  complete: 1_200,
+  copy: 850,
+  transfer: 700,
+  paste: 950,
+  complete: 700,
 } as const;
 
 const REDUCED_MOTION_STEP_MS = 40;

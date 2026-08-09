@@ -623,7 +623,7 @@ input:focus-visible {
   height: 2px;
   background: var(--mint);
   box-shadow: 0 0 24px var(--mint);
-  animation: scan 1.6s linear infinite;
+  animation: scan 1.3s linear infinite;
   opacity: 0.45;
 }
 
@@ -632,7 +632,7 @@ input:focus-visible {
   border: 1px solid var(--line);
   background: rgba(9, 25, 21, 0.92);
   opacity: 0.35;
-  transition: opacity 360ms ease, transform 360ms ease, border-color 360ms ease;
+  transition: opacity 280ms ease, transform 280ms ease, border-color 280ms ease;
 }
 
 .copy-sequence__card small,
@@ -688,7 +688,7 @@ input:focus-visible {
 }
 
 .copy-sequence[data-step="transfer"] .copy-sequence__line i {
-  animation: transfer 1.1s linear forwards;
+  animation: transfer 700ms linear forwards;
 }
 
 .copy-sequence__prompt,
