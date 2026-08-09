@@ -12,6 +12,7 @@ import {
   createStationClippingPlanes,
 } from "../cityPaste/clipping";
 import { createCityPasteTransform } from "../cityPaste/createCityPasteTransform";
+import { isIOSDevice } from "./platform";
 import {
   KYOTO_STATION,
   TOKYO_STATION,
@@ -42,12 +43,14 @@ const DEFAULT_STATE: CityPasteState = {
 
 export class CityPasteController {
   readonly #viewer: Viewer;
+  readonly #iosCompatibilityMode: boolean;
   #tokyoTileset: Cesium3DTileset | undefined;
   #kyotoTileset: Cesium3DTileset | undefined;
   #state: CityPasteState = DEFAULT_STATE;
 
-  constructor(viewer: Viewer) {
+  constructor(viewer: Viewer, iosCompatibilityMode = isIOSDevice()) {
     this.#viewer = viewer;
+    this.#iosCompatibilityMode = iosCompatibilityMode;
   }
 
   get state(): CityPasteState {
@@ -88,8 +91,10 @@ export class CityPasteController {
       sourcePosition,
       this.#state.sizeMeters,
     );
-    kyoto.colorBlendMode = Cesium3DTileColorBlendMode.MIX;
-    kyoto.colorBlendAmount = 0.45;
+    if (!this.#iosCompatibilityMode) {
+      kyoto.colorBlendMode = Cesium3DTileColorBlendMode.MIX;
+      kyoto.colorBlendAmount = 0.45;
+    }
 
     this.#applyTransform();
     this.#applyOpacity();
@@ -160,10 +165,13 @@ export class CityPasteController {
   }
 
   #applyOpacity(): void {
-    if (!this.#kyotoTileset) {
+    if (!this.#kyotoTileset || this.#iosCompatibilityMode) {
       return;
     }
 
+    // CPU styling uses inout vectors that affected WebKit versions can mistranslate to MSL.
+    // ref: https://github.com/CesiumGS/cesium/blob/main/packages/engine/Source/Shaders/Model/CPUStylingStageVS.glsl
+    // ref: https://chromium.googlesource.com/angle/angle/+/d33a22228ee2999ab5e2d2eda4d405c5768555d2/src/compiler/translator/TranslatorMetalDirect/ProgramPrelude.cpp
     this.#kyotoTileset.style = new Cesium3DTileStyle({
       color: `color('#7bf6d1', ${this.#state.opacity})`,
     });

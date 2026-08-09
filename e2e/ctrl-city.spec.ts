@@ -103,6 +103,12 @@ test("completes the paste with the iOS-safe tile profile", async ({
     "2都市のデータ接続完了",
     { timeout: 30_000 },
   );
+  await expect(page.locator("#opacity")).toBeDisabled();
+  await expect(page.locator("#opacity-value")).toHaveText("100%");
+  const usesWebgl1 = await page.locator("#cesium-container canvas").evaluate(
+    (canvas: HTMLCanvasElement) => canvas.getContext("webgl2") === null,
+  );
+  expect(usesWebgl1).toBe(true);
   await page.locator("#paste-button").click();
   await expect(page.locator("#mode-after")).toHaveAttribute(
     "aria-pressed",

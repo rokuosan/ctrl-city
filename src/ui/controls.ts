@@ -1,3 +1,5 @@
+import { isIOSDevice } from "../app/platform";
+
 export type ComparisonMode = "before" | "after";
 
 export type ControlsCallbacks = Readonly<{
@@ -40,6 +42,7 @@ export function wireControls(
   const aboutDialog = requireElement<HTMLDialogElement>(root, "#about-dialog");
   const aboutButton = requireElement<HTMLButtonElement>(root, "#about-button");
   const aboutClose = requireElement<HTMLButtonElement>(root, "#about-close");
+  const iosCompatibilityMode = isIOSDevice();
 
   let sequenceRunning = false;
   let awaitingKeyboardPaste = false;
@@ -190,7 +193,12 @@ export function wireControls(
       beforeButton.disabled = false;
       afterButton.disabled = false;
       rotationInput.disabled = false;
-      opacityInput.disabled = false;
+      opacityInput.disabled = iosCompatibilityMode;
+      if (iosCompatibilityMode) {
+        opacityInput.value = "100";
+        opacityValue.value = "100%";
+        opacityInput.title = "iOS互換モードでは透明度を固定しています";
+      }
     },
     setError(message: string) {
       controlsReady = false;
