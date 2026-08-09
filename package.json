@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "pnpm typecheck && vite build",
+    "deploy": "pnpm build && wrangler deploy",
+    "deploy:dry-run": "pnpm build && wrangler deploy --dry-run",
     "preview": "vite preview",
+    "worker:dev": "pnpm build && wrangler dev",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
