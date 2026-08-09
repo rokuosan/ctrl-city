@@ -17,5 +17,11 @@
       "enabled": true,
       "head_sampling_rate": 0.01
     }
-  }
+  },
+  "routes": [
+    {
+      "pattern": "kansai-plateau-2026.rokuosan.dev",
+      "custom_domain": true,
+    },
+  ],
 }
