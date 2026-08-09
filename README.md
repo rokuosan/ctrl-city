@@ -81,6 +81,7 @@ Transform = TokyoENU × RotationZ × inverse(KyotoENU)
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm types:worker:check
 ```
 
 ## Cloudflare Workers

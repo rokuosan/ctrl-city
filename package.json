@@ -6,13 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "pnpm typecheck && vite build",
+    "check": "pnpm test && pnpm build && pnpm types:worker:check",
     "deploy": "pnpm build && wrangler deploy",
     "deploy:dry-run": "pnpm build && wrangler deploy --dry-run",
     "preview": "vite preview",
     "worker:dev": "pnpm build && wrangler dev",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "types:worker": "wrangler types --include-runtime=false",
+    "types:worker:check": "wrangler types --include-runtime=false --check"
   },
   "dependencies": {
     "cesium": "^1.144.0"
