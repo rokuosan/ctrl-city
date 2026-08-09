@@ -109,3 +109,7 @@ pnpm deploy
 - iOSではWebGL 1の互換描画を使い、大気表現と京都側の着色・半透明化を無効にしたうえで、3D TilesのLODとGPUキャッシュを制限しています。
 - 地下構造、鉄道線形、衝突回避、法規判定、東京側建物の削除、任意都市選択は対象外です。
 - スマートフォン向けの専用最適化は行っていません。
+
+## 関連資料
+
+- [PoC ドキュメント | Notion](https://app.notion.com/p/rokuosan/Ctrl-CITY-PLATEAU-Web-MVP-3b7b08cf9024810daca2c6733669e3c9?source=copy_link)
