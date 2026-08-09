@@ -2,6 +2,7 @@ import { Cartesian3, Matrix4, Transforms } from "cesium";
 import { describe, expect, it } from "vitest";
 import {
   DEFAULT_PASTE_SIZE_METERS,
+  TARGET_CONTEXT_SIZE_METERS,
   createStationClippingPlanes,
 } from "./clipping";
 import { createCityPasteTransform } from "./createCityPasteTransform";
@@ -12,6 +13,13 @@ import {
 } from "./stations";
 
 describe("createStationClippingPlanes", () => {
+  it("sizes the target context to contain the pasted square at any rotation", () => {
+    const pasteDiagonal = DEFAULT_PASTE_SIZE_METERS * Math.SQRT2;
+
+    expect(TARGET_CONTEXT_SIZE_METERS).toBeGreaterThanOrEqual(pasteDiagonal);
+    expect(TARGET_CONTEXT_SIZE_METERS).toBeLessThan(pasteDiagonal + 10);
+  });
+
   it("creates four unioned planes at half the selected square size", () => {
     const source = stationToCartesian(KYOTO_STATION);
     const tilesetCenter = Cartesian3.fromDegrees(135.5, 35.1);

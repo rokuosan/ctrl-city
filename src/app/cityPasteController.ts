@@ -9,6 +9,7 @@ import {
 } from "cesium";
 import {
   DEFAULT_PASTE_SIZE_METERS,
+  TARGET_CONTEXT_SIZE_METERS,
   createStationClippingPlanes,
 } from "../cityPaste/clipping";
 import { createCityPasteTransform } from "../cityPaste/createCityPasteTransform";
@@ -81,11 +82,18 @@ export class CityPasteController {
       load("京都", loadPlateauTileset(KYOTO_BUILDINGS)),
     ]);
 
-    this.#tokyoTileset = this.#viewer.scene.primitives.add(tokyoTileset);
+    const tokyo = this.#viewer.scene.primitives.add(tokyoTileset);
+    this.#tokyoTileset = tokyo;
     const kyoto = this.#viewer.scene.primitives.add(kyotoTileset);
     this.#kyotoTileset = kyoto;
 
     const sourcePosition = stationToCartesian(KYOTO_STATION);
+    const targetPosition = stationToCartesian(TOKYO_STATION);
+    tokyo.clippingPlanes = createStationClippingPlanes(
+      tokyo.boundingSphere.center,
+      targetPosition,
+      TARGET_CONTEXT_SIZE_METERS,
+    );
     kyoto.clippingPlanes = createStationClippingPlanes(
       kyoto.boundingSphere.center,
       sourcePosition,
@@ -129,7 +137,7 @@ export class CityPasteController {
   focusTokyo(duration = 0): void {
     const target = stationToCartesian(TOKYO_STATION);
     this.#viewer.camera.flyToBoundingSphere(
-      new BoundingSphere(target, this.#state.sizeMeters / 2),
+      new BoundingSphere(target, TARGET_CONTEXT_SIZE_METERS / 2),
       {
         duration,
         offset: new HeadingPitchRange(
